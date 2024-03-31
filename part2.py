@@ -1,6 +1,5 @@
 from monte_carlo import *
 from collections import defaultdict
-import re
 
 # You will run an experiment to test five variations of your algorithms against each 
 # other, as listed below. The numbers after the algorithm acronym are the parameter 
@@ -17,11 +16,13 @@ def main():
         for contender2 in contenders:
             wins = [0, 0]
             ties = 0
-            for x in range(100):
-                board = ["O"*7 for j in range(6)]
-                winner = playGame(contender1, contender2, board)
-                if winner:
-                    wins[winner] += 1
+            for x in range(25):
+                board = [['O', 'O', 'O', 'O', 'O', 'O', 'O'],['O', 'O', 'O', 'O', 'O', 'O', 'O'],['O', 'O', 'O', 'O', 'O', 'O', 'O'],['O', 'O', 'O', 'O', 'O', 'O', 'O'],['O', 'O', 'O', 'O', 'O', 'O', 'O'],['O', 'O', 'O', 'O', 'O', 'O', 'O']]
+                winner = play_game(contender1, contender2, board)
+                if winner == 1:
+                   wins[0] += 1
+                elif winner == -1:
+                   wins[1] += 1
                 else:
                     ties+=1
             scores[contender1][contender2]+=wins[0]
@@ -57,41 +58,50 @@ def printBoard(board):
         print("\t"+" ".join(row))
     print()
 
-def playGame(contender1, contender2, board):
+def play_game(contender1, contender2, board):
     #yellow goes first
-    #THIS NEEDS FIX
     Yturn = True
     while True:
         if Yturn:
             move = getMove(contender1, "Y", board)
-            board = playMove(board, move)
+            board = play_move(board, move)
         else:
             move = getMove(contender2, "R", board)
-            board = playMove(board, move)
-            b
-        Yturn = not Yturn
-        done, winner = is_terminal_node(board)
-        if done:
-            if winner:
-                return int(winner == "R")
-            return
+            board = play_move(board, move)
 
-def getMove(algorithm, turn, board, print_mode="NONE"):
+        Yturn = not Yturn
+        if is_game_over(board):
+           return get_game_result(board)
+
+def getMove(algorithm, player, board, verbosity="NONE"):
+    ["UR", "PMCGS500", "PMCGS10000", "UCT500", "UCT10000"]
     if algorithm == 'UR':
         # Find legal moves
         legal_moves = find_legal_moves(board)
         return uniform_random_move(legal_moves)
-     
 
-    if algorithm == 'PMCGS':
-      root = MonteCarloTreeSearchNode(state = board, verbosity=v)
-      return root.best_action(simulations = simulations)
+    if algorithm == "PMCGS500":
+      simulations = 500
+      root = MonteCarloTreeSearchNode(state = board, player=player ,verbosity=verbosity)
+      return root.best_action(simulations = simulations).parent_action
     
 
-    if algorithm == 'UCT':
-      root = MonteCarloTreeSearchNode(state = board, verbosity=v)
-      return root.best_action(simulations = simulations, algo='UCT')
+    if algorithm == "PMCGS10000":
+      simulations = 1000
+      root = MonteCarloTreeSearchNode(state = board, player=player , verbosity=verbosity)
+      return root.best_action(simulations = simulations).parent_action
+    
+    if algorithm == "UCT500":
+      simulations = 500
+      root = MonteCarloTreeSearchNode(state = board, player=player , verbosity=verbosity)
+      return root.best_action(simulations = simulations, algo='UCT').parent_action
+    
+    if algorithm == "UCT10000":
+      simulations = 1000
+      root = MonteCarloTreeSearchNode(state = board, player=player , verbosity=verbosity)
+      return root.best_action(simulations = simulations, algo='UCT').parent_action
  
+
 
 
 if __name__ == '__main__':

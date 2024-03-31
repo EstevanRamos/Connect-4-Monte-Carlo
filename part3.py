@@ -3,8 +3,8 @@ from monte_carlo import *
 ROWS = 6
 COLUMNS = 7
 EMPTY = 'O'
-PLAYER1 = 'R'
-PLAYER2 = 'Y'
+PLAYER1 = 'Y'
+PLAYER2 = 'R'
 
 # Board
 board = [[EMPTY for _ in range(COLUMNS)] for _ in range(ROWS)]
